@@ -23,3 +23,4 @@
   },
   "proxy": "http://localhost:3001"
 }
+// replace start with "start": "react-scripts start", in dev mode
