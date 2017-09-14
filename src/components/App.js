@@ -47,7 +47,7 @@ class App extends Component {
 				<div className="topleft">
 					<img className="logo" src={require('./logo.png')} />
 				</div>
-				{/*<img className="bg-img" src={require('./brooklyn.jpg')} />*/}
+				<img className="bg-img" src={require('./brooklyn.jpg')} />
 				<div className="middle">
 					<h1>COMING SOON</h1>
 					<hr />
