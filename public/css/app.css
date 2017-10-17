@@ -1,0 +1,47 @@
+.relative {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+#bgvid {
+  position: absolute;
+  width: 100%;
+}
+
+
+.testimonial-box {
+  margin-bottom: 5rem;
+}
+
+.center {
+  text-align: center !important;
+}
+
+/*@media (min-width: 729px) {*/
+  .testi-item {
+    padding-right: 30rem;
+    padding-left: 30rem;
+  }
+/*}*/
+.buyer-title {
+  font-size: 20px;
+  font-weight: 500;
+  padding-top: 3rem;
+}
+
+.upswing {
+  color: #00b4e5;
+}
+
+.soln {
+  color: #32b7bb;
+}
+
+.background-opacity {
+  background: rgba(0, 0, 0, 0.42);
+  padding: 16px;
+  border-radius: 4px;
+}

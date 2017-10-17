@@ -1,25 +1,36 @@
 {
   "name": "upswing",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "axios": "^0.16.2",
-    "body-parser": "^1.17.2",
-    "express": "^4.15.3",
-    "mongoose": "^4.11.3",
-    "morgan": "^1.8.2",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
-    "react-router-dom": "^4.2.2"
-  },
-  "devDependencies": {
-    "react-scripts": "1.0.10"
-  },
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
   "scripts": {
-    "start": "node server",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "proxy": "http://localhost:3001"
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/pradhanr03/realestate"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "dependencies": {
+    "bindings": "^1.2.1",
+    "body-parser": "^1.13.2",
+    "cookie-parser": "^1.4.3",
+    "cron": "^1.1.0",
+    "dotenv": "^1.2.0",
+    "express": "^4.14.0",
+    "express-handlebars": "^2.0.1",
+    "express-session": "^1.11.3",
+    "fs": "0.0.2",
+    "http": "0.0.0",
+    "method-override": "^2.3.4",
+    "morgan": "^1.6.1",
+    "path": "^0.11.14",
+    "pg": "^4.4.0",
+    "sendgrid": "^1.9.1"
+  }
 }

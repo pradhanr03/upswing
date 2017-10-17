@@ -1,144 +1,114 @@
-// Include Server Dependencies
-var express = require("express");
-var bodyParser = require("body-parser");
-var logger = require("morgan");
-var mongoose = require("mongoose");
-
-// Require Click schema
-// var Click = require("./models/click");
-
-var User = require("./models/user");
-// Create a new express app
+var root = __dirname;
+var express = require('express');
+var fs = require('fs');
 var app = express();
-// Sets an initial port. We'll use this later in our listener
-var PORT = process.env.PORT || 3001;
+var router = express.Router();
+var dotenv = require('dotenv');
+dotenv.load();
 
-// Run Morgan for Logging
-app.use(logger("dev"));
+var bodyParser = require('body-parser');
+var exphbs = require('express-handlebars');
+var hbs = exphbs.create({
+    // Specify helpers which are only registered on this instance.
+    defaultLayout: 'main',
+    extname: 'handlebars',
+    helpers: {
+        section: function(name, options){
+            if(!this._sections) this._sections = {};
+            this._sections[name] = options.fn(this);
+            return null;
+        },
+        eachData: function(context, options){
+          var fn = options.fn, inverse = options.inverse, ctx;
+            var ret = "";
+
+            if(context && context.length > 0) {
+              for(var i=0, j=context.length; i<j; i++) {
+                ctx = Object.create(context[i]);
+                ctx.index = i;
+                ret = ret + fn(ctx);
+              }
+            } else {
+              ret = inverse(this);
+            }
+            return ret;
+        },
+        math: function(lvalue, operator, rvalue, options){
+          lvalue = parseFloat(lvalue);
+              rvalue = parseFloat(rvalue);
+
+              return {
+                  "+": lvalue + rvalue
+              }[operator];
+        }
+    }
+});
+
+hbs.getPartials(__dirname + '/views/partials');
+
+// var bcrypt = require('bcrypt');
+var session = require('express-session');
+var methodOverride = require('method-override');
+var logger = require('morgan');
+var path = require('path');
+var db = require('./db.js');
+
+app.set('port', (process.env.PORT || 3000));
+// app.listen(app.get('port'), function() {
+//     console.log("App running on port : ", app.get('port'));
+// });
+
+// app.engine('handlebars', exphbs({
+//     defaultLayout: 'main',
+//     extname: 'handlebars'
+// }));
+app.engine('handlebars', hbs.engine);
+app.set('views', path.join(root, 'views'));
+app.set('view engine', 'handlebars');
+app.use(express.static('public'));
+app.use(logger('dev'));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.text());
-app.use(bodyParser.json({ type: "application/vnd.api+json" }));
+app.use(session({
+    secret: 'allthethings',
+    saveUninitialized: false,
+    resave: false
+}));
 
-app.use(express.static("build"));
-
-// -------------------------------------------------
-
-// MongoDB configuration (Change this URL to your own DB)
-var url;
-
-if (process.env.MONGODB_URI) {
-  url = process.env.MONGODB_URI;
-}
-else {
-  url = "mongodb://localhost/MERN";
-}
-mongoose.connect(url);
-var db = mongoose.connection;
-
-db.on("error", function(err) {
-  console.log("Mongoose Error: ", err);
-});
-
-db.once("open", function() {
-  console.log("Mongoose connection successful.");
-});
-
-// -------------------------------------------------
-
-// Main "/" Route. This will redirect the user to our rendered React application
-app.get("/", function(req, res) {
-  res.sendFile(__dirname + "/build/static/index.html");
-});
-
-// This is the route we will send GET requests to retrieve our most recent click data.
-// We will call this route the moment our page gets rendered
-// app.get("/api", function(req, res) {
-
-//   // This GET request will search for the latest clickCount
-//   Click.find({}).exec(function(err, doc) {
-
-//     if (err) {
-//       console.log(err);
-//     }
-//     else {
-//       res.send(doc);
-//     }
-//   });
-// });
-
-// // This is the route we will send POST requests to save each click.
-// // We will call this route the moment the "click" or "reset" button is pressed.
-// app.post("/api", function(req, res) {
-
-//   var clickID = req.body.clickID;
-//   var clicks = parseInt(req.body.clicks);
-
-//   // Note how this route utilizes the findOneAndUpdate function to update the clickCount
-//   // { upsert: true } is an optional object we can pass into the findOneAndUpdate method
-//   // If included, Mongoose will create a new document matching the description if one is not found
-//   Click.findOneAndUpdate({
-//     clickID: clickID
-//   }, {
-//     $set: {
-//       clicks: clicks
-//     }
-//   }, { upsert: true }).exec(function(err) {
-
-//     if (err) {
-//       console.log(err);
-//     }
-//     else {
-//       res.send("Updated Click Count!");
-//     }
-//   });
-// });
-
-app.post("/api/users", function(req, res) {
-  console.log("HEHEHEHE>>>>");
-  console.log(req.body);
-  var data = {
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    email: req.body.email
-  }
-
-
-  // Note how this route utilizes the findOneAndUpdate function to update the clickCount
-  // { upsert: true } is an optional object we can pass into the findOneAndUpdate method
-  // If included, Mongoose will create a new document matching the description if one is not found
-  User.findOneAndUpdate({
-    email: data.email
-  }, data, { upsert: true }).exec(function(err) {
-        if (err) {
-      console.log(err);
+app.use(methodOverride(function(req, res) {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+        // look in urlencoded POST bodies and delete it
+        var method = req.body._method
+        delete req.body._method
+        return method
     }
-    else {
-      console.log("Added Users");
-      res.send("Added Users");
+}));
+
+fs.readdirSync('./controllers').forEach(function(file) {
+    if (file.substr(-3) == '.js') {
+        route = require('./controllers/' + file);
+        console.log('this is the route', route);
+        route.controller(app, session);
     }
-  });
 });
 
-app.get("/api/users", function(req, res) {
-
-  // This GET request will search for the latest clickCount
-  User.find({}).exec(function(err, doc) {
-
-    if (err) {
-      console.log(err);
-    }
-    else {
-      console.log("list?>>>");
-      console.log(doc);
-      res.send(doc);
-    }
-  });
+var http = require('http').Server(app);
+http.listen(app.get('port'), function() {
+    console.log("app is running at localhost:" + app.get('port'));
 });
 
-// -------------------------------------------------
-
-// Starting our express server
-app.listen(PORT, function() {
-  console.log("App listening on PORT: " + PORT);
+//ROOT ROUTE
+app.get('/', function(req, res) {
+    res.render('home');
 });
+
+app.get('/home-for-sale', function(req, res) {
+    res.render('homeforsale');
+});
+
+app.get('/blog', function(req, res) {
+    res.render('blog');
+});
+
