@@ -1,0 +1,19 @@
+DROP TABLE IF EXISTS buyers CASCADE;
+DROP TABLE IF EXISTS sellers CASCADE;
+
+CREATE TABLE buyers (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(255),
+	email VARCHAR(255),
+	zip_code VARCHAR(255),
+	phone VARCHAR(255)
+);
+
+CREATE TABLE sellers (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(255),
+	email VARCHAR(255),
+	zip_code VARCHAR(255),
+	phone VARCHAR(255)
+);
+
