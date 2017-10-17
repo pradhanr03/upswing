@@ -1,2 +1,8 @@
-
+/node_modules
 .env
+/public
+server.js
+/controllers
+/models
+/views
+schema.sql
